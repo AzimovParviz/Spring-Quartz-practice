@@ -1,6 +1,7 @@
 package com.laskutus.free.validate.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Year;
 
 public class Validate {
@@ -10,10 +11,16 @@ public class Validate {
 	}
 
 	public String validate(String ssn_input) {
-		String result = "true";
+		String result = "";
 		int currentYear = Year.now().getValue(); // current year to check for centuries
-		char controlCharacter = ssn_input.charAt(ssn_input.length());
-		BigDecimal firstPartOfSSN = new BigDecimal(Integer.valueOf(ssn_input.substring(0, 5)));
+		char controlCharacter = ssn_input.charAt(ssn_input.length() - 1);
+		System.out.println((ssn_input.substring(0, 6)));
+		BigDecimal firstPartOfSSN = new BigDecimal(Integer.valueOf(ssn_input.substring(0, 6)));
+		BigDecimal totalNumerical = new BigDecimal(
+				firstPartOfSSN.intValue() * 1000 + Integer.valueOf(ssn_input.substring(7, 10)));
+		System.out.println("individual code: " + ssn_input.substring(7, 10));
+		System.out.println("first part of ssn: " + firstPartOfSSN.toPlainString());
+		System.out.println("total numerical: " + totalNumerical);
 
 		// Example code: 131052-308T.
 		// 131052 = dd/mm/yy
@@ -32,13 +39,32 @@ public class Validate {
 		// Map<Integer, Integer> control_characters = new HashMap<Integer, Integer>();
 
 		// Testing if the given SSN is 11 characters long
+		//
 
 		if (ssn_input.length() != 11) {
 			// Creating an error message. In case there are more things wrong, the error
 			// message will be longer
 			result += "Wrong character length \n";
 		}
-
+		// Control character cannot be these letters: G, I, O, Q, Z. Afterwards, we are
+		// just assigning control character's numeric value to a new variable
+		int numericValueOfControlCharacter = controlCharacter;
+		if (controlCharacter == 71 || controlCharacter == 81 || controlCharacter == 90 || controlCharacter == 79
+				|| controlCharacter == 73) {
+			result += "Invalid control character. Control character cannot be " + controlCharacter + '\n';
+		} else if (controlCharacter >= 65 && controlCharacter <= 70) {
+			numericValueOfControlCharacter -= 55;
+		} else if (controlCharacter == 72) {
+			numericValueOfControlCharacter -= 56;
+		} else if (controlCharacter > 72 && controlCharacter <= 78) {
+			numericValueOfControlCharacter -= 57;
+		} else if (controlCharacter > 78 && controlCharacter <= 80) {
+			numericValueOfControlCharacter -= 58;
+		} else if (controlCharacter > 80 && controlCharacter <= 89) {
+			numericValueOfControlCharacter -= 59;
+		} else if (controlCharacter >= 48 && controlCharacter <= 57) {
+			numericValueOfControlCharacter -=48;
+		}
 		// Validating the century by comparing the year of birth to the currentYear
 		if ((Integer.valueOf(ssn_input.substring(4, 5)) > currentYear % 100) && (ssn_input.charAt(6) == 'A')) {
 			result += "Wrong century sign. \n";
@@ -51,18 +77,30 @@ public class Validate {
 		}
 
 		// Validating the control character
-		BigDecimal divisionByThirtyOneResult = new BigDecimal(firstPartOfSSN.divide(new BigDecimal(31)).intValue());
+		BigDecimal divisionByThirtyOneResult = new BigDecimal(totalNumerical
+				.divide(new BigDecimal(31), 10, RoundingMode.FLOOR).setScale(10, RoundingMode.FLOOR).toPlainString());
+		System.out.println("result of division: " + divisionByThirtyOneResult);
 		if (divisionByThirtyOneResult.scale() == 0) {
 			// divides by 31 without a decimal
 			if (controlCharacter != divisionByThirtyOneResult.intValue() - 31) {
-				result += "Invalid control character. \n";
+				result += "Invalid control character. 1\n";
+			}
+		} else {
+			BigDecimal decimalReminder = divisionByThirtyOneResult.remainder(BigDecimal.ONE);
+			System.out.println(decimalReminder.multiply(new BigDecimal(31).setScale(2, RoundingMode.HALF_UP))
+					.setScale(0, RoundingMode.HALF_UP).toPlainString());
+			int controlCharacterCalculationResult = decimalReminder
+					.multiply(new BigDecimal(31).setScale(2, RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP)
+					.intValue();
+			if (numericValueOfControlCharacter != controlCharacterCalculationResult) {
+				System.out.println("value of the control char: " + (int) numericValueOfControlCharacter);
+				System.out.println("calculated control char: " + controlCharacterCalculationResult);
+				result += "Invalid control character. 2\n";
 			}
 		}
-		else {
-			if (controlCharacter != divisionByThirtyOneResult.scale() * 31) {
-				result += "Invalid control character. \n";
-			}
-		}
+
+		if (result.isEmpty())
+			result = "true";
 
 		return result;
 	}
