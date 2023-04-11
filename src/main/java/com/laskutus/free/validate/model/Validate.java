@@ -46,6 +46,9 @@ public class Validate {
 			// message will be longer
 			result += "Wrong character length \n";
 		}
+		// Checking against ASCII values of letters and numbers from the control
+		// character table, making sure to convert the numerical value to the ones we
+		// would get after calculating the control character
 		// Control character cannot be these letters: G, I, O, Q, Z. Afterwards, we are
 		// just assigning control character's numeric value to a new variable
 		int numericValueOfControlCharacter = controlCharacter;
@@ -63,7 +66,7 @@ public class Validate {
 		} else if (controlCharacter > 80 && controlCharacter <= 89) {
 			numericValueOfControlCharacter -= 59;
 		} else if (controlCharacter >= 48 && controlCharacter <= 57) {
-			numericValueOfControlCharacter -=48;
+			numericValueOfControlCharacter -= 48;
 		}
 		// Validating the century by comparing the year of birth to the currentYear
 		if ((Integer.valueOf(ssn_input.substring(4, 5)) > currentYear % 100) && (ssn_input.charAt(6) == 'A')) {
