@@ -6,12 +6,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
+import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ExchangeRateJob implements Job {
 	private static Logger _log = LoggerFactory.getLogger(ExchangeRateJob.class);
 
@@ -33,7 +36,8 @@ public class ExchangeRateJob implements Job {
 			in.close();
 			_log.info("Response code: " + con.getResponseCode());
 			con.disconnect();
-			return content.toString();
+			JSONObject jo = new JSONObject(content.toString());
+			return jo.toString();
 		} catch (Exception e) {
 			_log.info(e.toString());
 		}
@@ -44,6 +48,7 @@ public class ExchangeRateJob implements Job {
 		ExchangeRateJob exchangeRateJob = new ExchangeRateJob();
 		String rates = exchangeRateJob.fetchExchangeRates();
 		_log.info("Received exchange rates!!!" + rates + new Date());
+		context.setResult(rates);
 	}
 
 }

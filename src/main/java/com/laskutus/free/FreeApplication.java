@@ -1,8 +1,11 @@
 package com.laskutus.free;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import static org.quartz.DateBuilder.evenMinuteDate;
@@ -10,6 +13,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
@@ -19,38 +23,54 @@ import java.util.Date;
 
 import com.laskutus.free.exchange.job.ExchangeRateJob;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = { "java.util.Date" })
 public class FreeApplication {
+	//TODO: separate modules 
+	@Bean
+	public JobDetail jobDetail() {
+		return newJob(ExchangeRateJob.class).withIdentity("job1", "group1").build();
+	}
+
+	@Bean
+	public Trigger trigger(JobDetail job) {
+		Date runTime = evenMinuteDate(new Date());
+
+		return newTrigger().withIdentity("trigger1", "group1").startAt(runTime).build();
+	}
+
+	@Bean
+	public Scheduler scheduler(Trigger trigger, JobDetail job) throws SchedulerException {
+		SchedulerFactory sf = new StdSchedulerFactory();
+
+		Scheduler scheduler = sf.getScheduler();
+		scheduler.scheduleJob(job, trigger);
+		scheduler.start();
+		return scheduler;
+	}
+
 	public void run() throws Exception {
 		Logger log = LoggerFactory.getLogger(FreeApplication.class);
 
 		log.info("------- Initializing ----------------------");
-
-		// First we must get a reference to a scheduler
-		SchedulerFactory sf = new StdSchedulerFactory();
-		Scheduler sched = sf.getScheduler();
-
 		log.info("------- Initialization Complete -----------");
 
 		// computer a time that is on the next round minute
-		Date runTime = evenMinuteDate(new Date());
 
 		log.info("------- Scheduling Job  -------------------");
 
 		// define the job and tie it to our HelloJob class
-		JobDetail job = newJob(ExchangeRateJob.class).withIdentity("job1", "group1").build();
-
+		JobDetail job = jobDetail();
 		// Trigger the job to run on the next round minute
-		Trigger trigger = newTrigger().withIdentity("trigger1", "group1").startAt(runTime).build();
-
+		Trigger trigger = trigger(job);
+		// init scheduler bean
+		Scheduler sched = scheduler(trigger, job);
 		// Tell quartz to schedule the job using our trigger
 		sched.scheduleJob(job, trigger);
 		//
-		log.info(job.getKey() + " will run at: " + runTime);
+		// log.info(job.getKey() + " will run at: " + runTime);
 
 		// Start up the scheduler (nothing can actually run until the
 		// scheduler has been started)
-		sched.start();
 
 		log.info("------- Started Scheduler -----------------");
 
@@ -60,11 +80,11 @@ public class FreeApplication {
 		try {
 			// wait 65 seconds to show job
 			Thread.sleep(65L * 1000L);
+
 			// executing...
 		} catch (Exception e) {
 			//
 		}
-
 		// shut down the scheduler
 		log.info("------- Shutting Down ---------------------");
 		sched.shutdown(true);
