@@ -42,9 +42,8 @@ public class FileOperations {
 		try {
 			File myObj = new File(path);
 			Scanner myReader = new Scanner(myObj);
-			// the json is written as a single line
+			// the json is written as a single line so no need to look for new lines
 			String data = myReader.nextLine();
-			//System.out.println(data);
 			myReader.close();
 			return data;
 		} catch (FileNotFoundException e) {

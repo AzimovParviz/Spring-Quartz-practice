@@ -27,15 +27,14 @@ public class ValidateControllerTests {
 	public void ValidateController_shouldValidateSSN_returnsTrue() throws Exception {
 		String requestBody = "{	\"ssn\":\"131052-308T\",\"countryCode\":\"FI\"}";
 		this.mockMvc.perform(post("/validate_ssn").content(requestBody).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().string("{\"ssn_valid\":true}"));
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().string("{\"ssn_valid\":true}"));
 	}
 
 	@Test
 	public void ValidateController_shouldValidateSSN_returnsFalse() throws Exception {
 		String requestBody = "{	\"ssn\":\"111022-303T\",\"countryCode\":\"FI\"}";
 		this.mockMvc.perform(post("/validate_ssn").content(requestBody).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().string("{\"error_message\":\"Invalid control character \\n\",\"ssn_valid\":false}"));
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content()
+						.string("{\"error_message\":\"Invalid control character \\n\",\"ssn_valid\":false}"));
 	}
 }

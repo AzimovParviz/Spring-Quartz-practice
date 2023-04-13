@@ -44,8 +44,6 @@ public class ExchangeRateJob implements Job {
 			_log.info("Response code: " + con.getResponseCode());
 			con.disconnect();
 
-			// JSONObject jo = new JSONObject(content.toString());
-			// return jo.toString();
 		} catch (Exception e) {
 			_log.info(e.toString());
 		}
@@ -69,8 +67,6 @@ public class ExchangeRateJob implements Job {
 			_log.info("Response code: " + con.getResponseCode());
 			con.disconnect();
 
-			// JSONObject jo = new JSONObject(content.toString());
-			// return jo.toString();
 		} catch (Exception e) {
 			_log.info(e.toString());
 		}
@@ -94,8 +90,6 @@ public class ExchangeRateJob implements Job {
 			_log.info("Response code: " + con.getResponseCode());
 			con.disconnect();
 
-			// JSONObject jo = new JSONObject(content.toString());
-			// return jo.toString();
 		} catch (Exception e) {
 			_log.info(e.toString());
 		}

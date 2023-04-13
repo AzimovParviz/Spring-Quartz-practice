@@ -92,10 +92,11 @@ public class Validate {
 				errorMessage += "Invalid control character \n";
 			}
 		} else {
-			BigDecimal decimalReminder = divisionByThirtyOneResult.remainder(BigDecimal.ONE);
-			System.out.println(decimalReminder.multiply(new BigDecimal(31).setScale(2, RoundingMode.HALF_UP))
+			// calculating using the decimal remainder
+			BigDecimal decimalRemainder = divisionByThirtyOneResult.remainder(BigDecimal.ONE);
+			System.out.println(decimalRemainder.multiply(new BigDecimal(31).setScale(2, RoundingMode.HALF_UP))
 					.setScale(0, RoundingMode.HALF_UP).toPlainString());
-			int controlCharacterCalculationResult = decimalReminder
+			int controlCharacterCalculationResult = decimalRemainder
 					.multiply(new BigDecimal(31).setScale(2, RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP)
 					.intValue();
 			if (numericValueOfControlCharacter != controlCharacterCalculationResult) {
@@ -104,6 +105,8 @@ public class Validate {
 				errorMessage += "Invalid control character \n";
 			}
 		}
+
+		// Generating the JSON response
 
 		JSONObject jo = new JSONObject();
 		if (errorMessage.isEmpty())

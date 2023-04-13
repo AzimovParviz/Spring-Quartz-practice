@@ -6,14 +6,11 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.util.Date;
 
-import com.laskutus.free.FreeApplication;
 import com.laskutus.free.exchange.job.ExchangeRateJob;
 import com.laskutus.free.utils.FileOperations;
 
 import org.json.JSONObject;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -22,8 +19,6 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,10 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ExchangeController {
 
-	@Autowired
-	private ApplicationContext context;
-
-	// TODO: separate modules
 	@Bean
 	public JobDetail jobDetail() {
 		return newJob(ExchangeRateJob.class).withIdentity("job1", "group1").build();
@@ -116,7 +107,6 @@ public class ExchangeController {
 		String ratesEUR = fo.ReadFile("eur.json");
 		String ratesSEK = fo.ReadFile("sek.json");
 		String ratesUSD = fo.ReadFile("usd.json");
-		// System.out.println("params: " + to + from + amount);
 		JSONObject returnBody = new JSONObject();
 		returnBody.put("from", from);
 		returnBody.put("to", to);
@@ -134,16 +124,13 @@ public class ExchangeController {
 			if (to.equals("USD")) {
 				System.out.println("==========FROM USD TO SEK");
 				if (from.equals("SEK")) {
-					// 215/50/17
 					System.out.println("==========FROM USD TO SEK");
 					returnBody.put("exchange_rate", SEKtoUSD);
-					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", SEKtoUSD * amount);
 					return returnBody.toString();
 				} else if (from.equals("EUR")) {
 					System.out.println("==========FROM USD TO EUR");
 					returnBody.put("exchange_rate", EURtoUSD);
-					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", EURtoUSD * amount);
 					return returnBody.toString();
 				}
@@ -151,16 +138,13 @@ public class ExchangeController {
 			if (to.equals("EUR")) {
 				System.out.println("==========FROM EUR TO SEK");
 				if (from.equals("SEK")) {
-					// 215/50/17
 					System.out.println("==========FROM EUR TO SEK");
 					returnBody.put("exchange_rate", SEKtoEUR);
-					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", SEKtoEUR * amount);
 					return returnBody.toString();
 				} else if (from.equals("USD")) {
 					System.out.println("==========FROM USD TO EUR");
 					returnBody.put("exchange_rate", USDtoEUR);
-					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", USDtoEUR * amount);
 					return returnBody.toString();
 				}
@@ -168,16 +152,13 @@ public class ExchangeController {
 			if (to.equals("SEK")) {
 				System.out.println("==========FROM SEK TO SEK");
 				if (from.equals("EUR")) {
-					// 215/50/17
 					System.out.println("==========FROM EUR TO SEK");
 					returnBody.put("exchange_rate", EURtoSEK);
-					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", EURtoSEK * amount);
 					return returnBody.toString();
 				} else if (from.equals("USD")) {
 					System.out.println("==========FROM USD TO SEK");
 					returnBody.put("exchange_rate", USDtoSEK);
-					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", USDtoSEK * amount);
 					return returnBody.toString();
 				}
@@ -187,7 +168,6 @@ public class ExchangeController {
 					"We are sorry, but we encountered a server-side error related to getting the latest exchange rates :(");
 		}
 
-		// return String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR);
 		return returnBody.toString();
 
 	}
