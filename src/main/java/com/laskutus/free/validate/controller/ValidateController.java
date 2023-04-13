@@ -3,6 +3,7 @@ package com.laskutus.free.validate.controller;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.laskutus.free.validate.model.Validate;
 
+import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 class ValidateController {
+
 	public ValidateController() {
 
 	}
@@ -40,7 +42,9 @@ class ValidateController {
 		System.out.println(ssnInput.toString());
 		String result = val.validate(ssnInput.ssn);
 		System.out.println(result);
-		return result;
+		JSONObject returnBody = new JSONObject();
+		returnBody.put("ssn_valid", result);
+		return returnBody.toString();
 	}
 
 }

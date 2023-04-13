@@ -86,7 +86,7 @@ public class Validate {
 		if (divisionByThirtyOneResult.scale() == 0) {
 			// divides by 31 without a decimal
 			if (controlCharacter != divisionByThirtyOneResult.intValue() - 31) {
-				result += "Invalid control character. 1\n";
+				result += "Invalid control character \n";
 			}
 		} else {
 			BigDecimal decimalReminder = divisionByThirtyOneResult.remainder(BigDecimal.ONE);
@@ -98,7 +98,7 @@ public class Validate {
 			if (numericValueOfControlCharacter != controlCharacterCalculationResult) {
 				System.out.println("value of the control char: " + (int) numericValueOfControlCharacter);
 				System.out.println("calculated control char: " + controlCharacterCalculationResult);
-				result += "Invalid control character. 2\n";
+				result += "Invalid control character \n";
 			}
 		}
 
