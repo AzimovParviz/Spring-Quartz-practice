@@ -139,6 +139,46 @@ public class ExchangeController {
 					// 1 usd = 10.34 sek for example.
 					returnBody.put("to_amount", SEKtoUSD * amount);
 					return returnBody.toString();
+				} else if (from.equals("EUR")) {
+					System.out.println("==========FROM USD TO EUR");
+					returnBody.put("exchange_rate", EURtoUSD);
+					// 1 usd = 10.34 sek for example.
+					returnBody.put("to_amount", EURtoUSD * amount);
+					return returnBody.toString();
+				}
+			}
+			if (to.equals("EUR")) {
+				System.out.println("==========FROM EUR TO SEK");
+				if (from.equals("SEK")) {
+					// 215/50/17
+					System.out.println("==========FROM EUR TO SEK");
+					returnBody.put("exchange_rate", SEKtoEUR);
+					// 1 usd = 10.34 sek for example.
+					returnBody.put("to_amount", SEKtoEUR * amount);
+					return returnBody.toString();
+				} else if (from.equals("USD")) {
+					System.out.println("==========FROM USD TO EUR");
+					returnBody.put("exchange_rate", USDtoEUR);
+					// 1 usd = 10.34 sek for example.
+					returnBody.put("to_amount", USDtoEUR * amount);
+					return returnBody.toString();
+				}
+			}
+			if (to.equals("SEK")) {
+				System.out.println("==========FROM SEK TO SEK");
+				if (from.equals("EUR")) {
+					// 215/50/17
+					System.out.println("==========FROM EUR TO SEK");
+					returnBody.put("exchange_rate", EURtoSEK);
+					// 1 usd = 10.34 sek for example.
+					returnBody.put("to_amount", EURtoSEK * amount);
+					return returnBody.toString();
+				} else if (from.equals("USD")) {
+					System.out.println("==========FROM USD TO SEK");
+					returnBody.put("exchange_rate", USDtoSEK);
+					// 1 usd = 10.34 sek for example.
+					returnBody.put("to_amount", USDtoSEK * amount);
+					return returnBody.toString();
 				}
 			}
 		}
