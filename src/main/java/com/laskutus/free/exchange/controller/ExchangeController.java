@@ -113,17 +113,32 @@ public class ExchangeController {
 
 		FileOperations fo = new FileOperations();
 		String rates = fo.ReadFile("rates.json");
-		System.out.println(rates);
+		//System.out.println("params: " + to + from + amount);
+		JSONObject returnBody = new JSONObject();
+		returnBody.put("from", from);
+		returnBody.put("to", to);
 		if (!rates.isEmpty()) {
 			JSONObject jsonRates = new JSONObject(rates);
 			jsonRates = jsonRates.getJSONObject("conversion_rates");
 			float USD = jsonRates.getFloat("USD");
 			float SEK = jsonRates.getFloat("SEK");
 			float EUR = jsonRates.getFloat("EUR");
-			log.info(String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR));
-			return String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR);
+			log.info(to + from + amount);
+			if (to.equals("USD")) {
+				System.out.println("==========FROM USD TO SEK");
+				if (from.equals("SEK")) {
+					// 215/50/17
+					System.out.println("==========FROM USD TO SEK");
+					returnBody.put("exchange_rate", SEK);
+					// 1 usd = 10.34 sek for example.
+					returnBody.put("to_amount", SEK * amount);
+					return returnBody.toString();
+				}
+			}
+			// return String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR);
+			return returnBody.toString();
 		}
-		return "hui";
+		return returnBody.toString();
 
 	}
 
