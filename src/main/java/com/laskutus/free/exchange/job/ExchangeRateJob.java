@@ -26,7 +26,7 @@ public class ExchangeRateJob implements Job {
 
 	}
 
-	public void fetchExchangeRates() {
+	public void fetchExchangeRatesUSD() {
 		try {
 			URL url = new URL("https://v6.exchangerate-api.com/v6/15e1b1b29c2c9a429b03db50/latest/USD");
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -39,8 +39,58 @@ public class ExchangeRateJob implements Job {
 			}
 			in.close();
 			FileOperations fo = new FileOperations();
-			fo.CreateFile("rates.json");
-			fo.WriteToFile("rates.json", content.toString());
+			fo.CreateFile("usd.json");
+			fo.WriteToFile("usd.json", content.toString());
+			_log.info("Response code: " + con.getResponseCode());
+			con.disconnect();
+
+			// JSONObject jo = new JSONObject(content.toString());
+			// return jo.toString();
+		} catch (Exception e) {
+			_log.info(e.toString());
+		}
+	}
+
+	public void fetchExchangeRatesSEK() {
+		try {
+			URL url = new URL("https://v6.exchangerate-api.com/v6/15e1b1b29c2c9a429b03db50/latest/SEK");
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			StringBuffer content = new StringBuffer();
+			String inputLine = "";
+			while ((inputLine = in.readLine()) != null) {
+				content.append(inputLine);
+			}
+			in.close();
+			FileOperations fo = new FileOperations();
+			fo.CreateFile("sek.json");
+			fo.WriteToFile("sek.json", content.toString());
+			_log.info("Response code: " + con.getResponseCode());
+			con.disconnect();
+
+			// JSONObject jo = new JSONObject(content.toString());
+			// return jo.toString();
+		} catch (Exception e) {
+			_log.info(e.toString());
+		}
+	}
+
+	public void fetchExchangeRatesEUR() {
+		try {
+			URL url = new URL("https://v6.exchangerate-api.com/v6/15e1b1b29c2c9a429b03db50/latest/EUR");
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			StringBuffer content = new StringBuffer();
+			String inputLine = "";
+			while ((inputLine = in.readLine()) != null) {
+				content.append(inputLine);
+			}
+			in.close();
+			FileOperations fo = new FileOperations();
+			fo.CreateFile("eur.json");
+			fo.WriteToFile("eur.json", content.toString());
 			_log.info("Response code: " + con.getResponseCode());
 			con.disconnect();
 
@@ -53,7 +103,10 @@ public class ExchangeRateJob implements Job {
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		ExchangeRateJob exchangeRateJob = new ExchangeRateJob();
-		exchangeRateJob.fetchExchangeRates();
+		exchangeRateJob.fetchExchangeRatesUSD();
+		exchangeRateJob.fetchExchangeRatesSEK();
+		exchangeRateJob.fetchExchangeRatesEUR();
+
 	}
 
 }

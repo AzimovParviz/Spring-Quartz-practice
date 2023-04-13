@@ -112,32 +112,38 @@ public class ExchangeController {
 	public String exchangeAmount(@RequestParam String to, String from, int amount) {
 
 		FileOperations fo = new FileOperations();
-		String rates = fo.ReadFile("rates.json");
-		//System.out.println("params: " + to + from + amount);
+		String ratesEUR = fo.ReadFile("eur.json");
+		String ratesSEK = fo.ReadFile("sek.json");
+		String ratesUSD = fo.ReadFile("usd.json");
+		// System.out.println("params: " + to + from + amount);
 		JSONObject returnBody = new JSONObject();
 		returnBody.put("from", from);
 		returnBody.put("to", to);
-		if (!rates.isEmpty()) {
-			JSONObject jsonRates = new JSONObject(rates);
-			jsonRates = jsonRates.getJSONObject("conversion_rates");
-			float USD = jsonRates.getFloat("USD");
-			float SEK = jsonRates.getFloat("SEK");
-			float EUR = jsonRates.getFloat("EUR");
+		if (!ratesEUR.isEmpty() && !ratesSEK.isEmpty() && !ratesUSD.isEmpty()) {
+			float USDtoEUR = new JSONObject(ratesUSD).getJSONObject("conversion_rates").getFloat("EUR");
+			float USDtoSEK = new JSONObject(ratesUSD).getJSONObject("conversion_rates").getFloat("SEK");
+
+			float SEKtoEUR = new JSONObject(ratesSEK).getJSONObject("conversion_rates").getFloat("EUR");
+			float EURtoUSD = new JSONObject(ratesEUR).getJSONObject("conversion_rates").getFloat("USD");
+
+			float EURtoSEK = new JSONObject(ratesEUR).getJSONObject("conversion_rates").getFloat("SEK");
+			float SEKtoUSD = new JSONObject(ratesSEK).getJSONObject("conversion_rates").getFloat("USD");
+
 			log.info(to + from + amount);
 			if (to.equals("USD")) {
 				System.out.println("==========FROM USD TO SEK");
 				if (from.equals("SEK")) {
 					// 215/50/17
 					System.out.println("==========FROM USD TO SEK");
-					returnBody.put("exchange_rate", SEK);
+					returnBody.put("exchange_rate", SEKtoUSD);
 					// 1 usd = 10.34 sek for example.
-					returnBody.put("to_amount", SEK * amount);
+					returnBody.put("to_amount", SEKtoUSD * amount);
 					return returnBody.toString();
 				}
 			}
-			// return String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR);
-			return returnBody.toString();
 		}
+
+		// return String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR);
 		return returnBody.toString();
 
 	}
