@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### read write json files for currency exchanges ###
+eur.json
+sek.json
+usd.json

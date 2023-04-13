@@ -42,9 +42,9 @@ class ValidateController {
 		System.out.println(ssnInput.toString());
 		String result = val.validate(ssnInput.ssn);
 		System.out.println(result);
-		JSONObject returnBody = new JSONObject();
-		returnBody.put("ssn_valid", result);
-		return returnBody.toString();
+		//JSONObject returnBody = new JSONObject();
+		//returnBody.put("ssn_valid", result);
+		return result.toString();
 	}
 
 }

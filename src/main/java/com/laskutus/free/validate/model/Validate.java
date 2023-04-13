@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Year;
 
+import org.json.JSONObject;
+
 public class Validate {
 
 	public Validate() {
@@ -12,6 +14,7 @@ public class Validate {
 
 	public String validate(String ssn_input) {
 		String result = "";
+		String errorMessage = "";
 		int currentYear = Year.now().getValue(); // current year to check for centuries
 		char controlCharacter = ssn_input.charAt(ssn_input.length() - 1);
 		System.out.println((ssn_input.substring(0, 6)));
@@ -44,7 +47,7 @@ public class Validate {
 		if (ssn_input.length() != 11) {
 			// Creating an error message. In case there are more things wrong, the error
 			// message will be longer
-			result += "Wrong character length \n";
+			errorMessage += "Wrong character length \n";
 		}
 		// Checking against ASCII values of letters and numbers from the control
 		// character table, making sure to convert the numerical value to the ones we
@@ -54,7 +57,7 @@ public class Validate {
 		int numericValueOfControlCharacter = controlCharacter;
 		if (controlCharacter == 71 || controlCharacter == 81 || controlCharacter == 90 || controlCharacter == 79
 				|| controlCharacter == 73) {
-			result += "Invalid control character. Control character cannot be " + controlCharacter + '\n';
+			errorMessage += "Invalid control character. Control character cannot be " + controlCharacter + '\n';
 		} else if (controlCharacter >= 65 && controlCharacter <= 70) {
 			numericValueOfControlCharacter -= 55;
 		} else if (controlCharacter == 72) {
@@ -70,23 +73,23 @@ public class Validate {
 		}
 		// Validating the century by comparing the year of birth to the currentYear
 		if ((Integer.valueOf(ssn_input.substring(4, 5)) > currentYear % 100) && (ssn_input.charAt(6) == 'A')) {
-			result += "Wrong century sign. \n";
+			errorMessage += "Wrong century sign. \n";
 		}
 
 		// Validating the individual number
 
 		if ((Integer.valueOf(ssn_input.substring(7, 9)) < 2) || (Integer.valueOf(ssn_input.substring(7, 9)) > 899)) {
-			result += "Invalid individual code. \n";
+			errorMessage += "Invalid individual code. \n";
 		}
 
 		// Validating the control character
 		BigDecimal divisionByThirtyOneResult = new BigDecimal(totalNumerical
 				.divide(new BigDecimal(31), 10, RoundingMode.FLOOR).setScale(10, RoundingMode.FLOOR).toPlainString());
-		System.out.println("result of division: " + divisionByThirtyOneResult);
+		System.out.println("errorMessage of division: " + divisionByThirtyOneResult);
 		if (divisionByThirtyOneResult.scale() == 0) {
 			// divides by 31 without a decimal
 			if (controlCharacter != divisionByThirtyOneResult.intValue() - 31) {
-				result += "Invalid control character \n";
+				errorMessage += "Invalid control character \n";
 			}
 		} else {
 			BigDecimal decimalReminder = divisionByThirtyOneResult.remainder(BigDecimal.ONE);
@@ -98,13 +101,17 @@ public class Validate {
 			if (numericValueOfControlCharacter != controlCharacterCalculationResult) {
 				System.out.println("value of the control char: " + (int) numericValueOfControlCharacter);
 				System.out.println("calculated control char: " + controlCharacterCalculationResult);
-				result += "Invalid control character \n";
+				errorMessage += "Invalid control character \n";
 			}
 		}
 
-		if (result.isEmpty())
-			result = "true";
-
-		return result;
+		JSONObject jo = new JSONObject();
+		if (errorMessage.isEmpty())
+			jo.put("ssn_valid", true);
+		else if (result.isEmpty()) {
+			jo.put("error_message", errorMessage);
+			jo.put("ssn_valid", false);
+		}
+		return jo.toString();
 	}
 }
