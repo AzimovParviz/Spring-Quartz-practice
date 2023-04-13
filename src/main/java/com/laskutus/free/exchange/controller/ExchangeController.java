@@ -109,7 +109,8 @@ public class ExchangeController {
 
 	@CrossOrigin("*")
 	@GetMapping(value = "exchange_amount", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public String exchangeAmount(@RequestParam String to, String from, int amount) {
+	public String exchangeAmount(@RequestParam(required = true) String to, @RequestParam(required = true) String from,
+			@RequestParam(required = true) int amount) {
 
 		FileOperations fo = new FileOperations();
 		String ratesEUR = fo.ReadFile("eur.json");
@@ -181,6 +182,9 @@ public class ExchangeController {
 					return returnBody.toString();
 				}
 			}
+		} else {
+			returnBody.put("error_message",
+					"We are sorry, but we encountered a server-side error related to getting the latest exchange rates :(");
 		}
 
 		// return String.valueOf(USD) + String.valueOf(SEK) + String.valueOf(EUR);
